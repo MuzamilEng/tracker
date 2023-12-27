@@ -1,14 +1,15 @@
 import React, { createContext, useContext, useEffect, useState, useReducer } from 'react';
-import {tracker} from '../Data'
+import {tracker, tableTitle} from '../Data'
 
 const initialState = tracker
+const initialColumnState = tableTitle;
 const UserContext = createContext(initialState);
 
 
 export const useGlobalContext = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
-  const userReducer = (state, action) => {
+  const dataReducer = (state, action) => {
     switch (action.type) {
       case 'UPDATE':
         const updatedState = state.map(item => 
@@ -29,8 +30,23 @@ export const UserProvider = ({ children }) => {
         return state;
     }
   };
+  const titleReducer = (state, action) => {
+    switch (action.type) {
+      case 'UPDATE':
+        const updatedState = state.map(item => 
+          item.id === action.payload.id ? { ...item, ...action.payload.data } : item
+        );
+        console.log("Updated State:", updatedState); // Add this line
+        return updatedState;
+  
+      default:
+        return state;
+    }
+  };
   const [selectedData, setSelectedData] = useState(null);
-  const [state, dispatch] = useReducer(userReducer, initialState);
+  const [selectedTitle, setSelectedTitle] = useState(null);
+  const [state, dispatch] = useReducer(dataReducer, initialState);
+  const [state1, dispatch1] = useReducer(titleReducer, initialColumnState);
   const [record, setRecord] = useState([]);
   // console.log(state, "UserProvider ki statae");
 
@@ -56,7 +72,7 @@ export const UserProvider = ({ children }) => {
     setRecord(state)
   }, [state]);
   return (
-    <UserContext.Provider value={{ record, addData, updateData, deleteData, setRecord, selectedData, setSelectedData, state, selectData }}>
+    <UserContext.Provider value={{ record, addData, updateData, deleteData, setRecord, selectedData, setSelectedData, state, selectData, state1 }}>
       {children}
     </UserContext.Provider>
   );

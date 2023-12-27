@@ -8,6 +8,7 @@ import ShowItems from '../app/Components/ShowItems';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import {SortableContext, useSortable, verticalListSortingStrategy, arrayMove} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
+import TableTitles from '@/app/Components/TableTitles';
 
 const Tracker = () => {
   const [updatedRecords, setUpdatedRecords] = useState([]);
@@ -17,6 +18,8 @@ const Tracker = () => {
     const [atRistk, setAtRistk]  = useState(false)
     const [showStatus, setShowStatus] = useState(false);
     const [showForm, setShowForm] = useState(false);
+    const [editMode, setEditMode] = useState(false);
+    const [cloumnTtitle, setCloumnTtitle] = useState({title: ""});
     const {state, selectData, selectedData, setRecord, updateData, addData} = useGlobalContext();
     const record = selectedData || null
 const { handleSubmit, setValue, control, reset } = useForm({
@@ -37,6 +40,7 @@ const handleEdit = (data, index) => {
   if (data) {
     // Store the selected data and its index
     selectData({ ...data, index });
+    setCloumnTtitle({...data, index});
     console.log(data, 'edit');
   }
   setShowForm(true);
@@ -62,6 +66,7 @@ const onSubmit = (data, e) => {
         title: data?.title || "",
         status_inProgress: {
           label: data?.label || "", 
+          status_count: data?.status_count || 3,
           date: data?.date || "", 
           docs: data?.docs || "",
         },
@@ -110,13 +115,9 @@ const onSubmit = (data, e) => {
     }
 
     const Sortable = ({data, index, handleEdit})=> {
-      // console.log(index, 'index');
       const {attributes, listeners, setNodeRef, transform, transition} = useSortable({id: data?.id}) 
-      // console.log(data?.id);
-        const style = {
-            transition, transform: CSS.Transform.toString(transform),
-        }
-        return <div ref={setNodeRef} style={style} {...attributes} {...listeners} className={`flex w-full items-center`} key={index}>
+        const style = { transition, transform: CSS.Transform.toString(transform)}
+        return <div ref={setNodeRef} style={style} {...attributes} {...listeners} className='flex w-full items-center' key={data?.id}>
         {inProgress ? 
         <ShowItems key={index} hanldeClick={handleEdit} ProjectTitle={data?.title} docs={data?.status_inProgress?.docs} title={data?.title} status_count={data?.status_inProgress?.status_count} date_count={data?.status_inProgress?.date_count} date={data?.status_inProgress?.date} color='yellow' label={data?.status_inProgress?.label}/>
         : upComing ?
@@ -132,7 +133,7 @@ const onSubmit = (data, e) => {
     const onDragEnd = (event) => {
       const { active, over } = event;
       
-      if (!over) return; // If not dropped over a valid target, do nothing
+      if (!over) return;
     
       setRecord((records) => {
         const oldIndex = records.findIndex((item) => item.id === active.id);
@@ -159,6 +160,7 @@ const onSubmit = (data, e) => {
         <section className="flex items-center">
             <button className='text-[1.2vw] text-purple-500 p-[0.6vw] font-medium cursor-pointer  border-[1px] m-vw border-gray-500 rounded-md'>Project Tracker</button>
             <button className='text-[1.2vw] text-black p-[0.6vw] font-medium cursor-pointer  border-[1px] m-vw border-gray-500 rounded-md' onClick={()=> setShowForm(true)}>Add Row</button>
+            <button className='text-[1.2vw] text-black p-[0.6vw] font-medium cursor-pointer  border-[1px] m-vw border-gray-500 rounded-md' onClick={()=> setEditMode(!editMode)}>{editMode ? 'Edit Mode' : 'Drag Mode'}</button>
         </section>
         {showStatus && (
         <div className="absolute top-[12vw] z-50 w-full left-[32vw]">
@@ -171,7 +173,8 @@ const onSubmit = (data, e) => {
           </div>
         </div>
       )}
-        <div className="flex items-center">
+      <TableTitles showStatus={()=> setShowStatus(!showStatus)} editMode={editMode} />
+        {/* <div className="flex items-center">
             {tableTitle?.map((title, index) => (
                 <div className={` w-full ${title?.width ? 'max-w-[14vw] ml-[3vw]': 'max-w-[17vw]'}`} key={index}>
                     <div className="flex justify-between w-full">
@@ -183,11 +186,13 @@ const onSubmit = (data, e) => {
                     </div>
                 </div>
             ))}
-        </div>
+        </div> */}
         <section className="grid grid-cols-1 w-full z-10">
-          {state?.map((data, index)=> {
-            return <Sortable key={index} data={data} index={index} handleEdit={()=> handleEdit(data, index)} />
-          })}
+          {editMode? <> 
+            {state?.map((data, index)=> {
+  return <Sortable key={index} data={data} index={index} handleEdit={()=> handleEdit(data, index)} />
+})}
+          </> : 
   <DndContext collisionsDetection={closestCenter} onDragEnd={onDragEnd}>
     <SortableContext items={state} strategy={verticalListSortingStrategy}>
       {updatedRecords?.length > 0 ? (
@@ -201,6 +206,7 @@ const onSubmit = (data, e) => {
       )}
     </SortableContext>
   </DndContext>
+}
 </section>
 
         </> : <>
@@ -210,6 +216,27 @@ const onSubmit = (data, e) => {
                 {addRecord?.map((item, index)=> {
                     return <main className='w-full p-0.5vw' key={index}>
                         <label className='text-vw ml-vw font-medium' htmlFor={item?.label}>{item?.label}</label>
+                        {item?.type === 'select'? <>
+                        <Controller 
+                        name={item?.name}
+                        control={control}
+                        rules={item?.rules}
+                        render={({ field }) => (
+                          <select
+                            {...field}
+                            onChange={handleInputChange}
+                            className='text-vw p-0.5vw border-[1px] w-full ml-vw rounded-md'
+                            type={item?.type}
+                            placeholder={item?.placeholder}
+                            >
+                              <option value="In Progress" className='text-vw'>Select status</option>
+                              {item?.options?.map((option, index) => (
+                                <option className='text-vw' key={index} value={option?.value}>{option?.title}</option>
+                              ))}
+                            </select>
+                        )}
+                        />
+                        </>:
                         <Controller
                       name={item?.name}
                       control={control}
@@ -224,6 +251,7 @@ const onSubmit = (data, e) => {
                         />
                       )}
                     />
+                      }
                     </main>
                 })}
                 <div className="flex justify-center mt-vw items-center">

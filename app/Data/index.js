@@ -4,23 +4,28 @@ import { Icon } from '@iconify/react';
 
 export const tableTitle = [
     {
+      id:0,
       title: 'Project',
       icon: <Icon icon="pepicons-pencil:dots-y" />,
     },
     {
+      id:1,
       title: 'Owner',
       icon: <Icon icon="pepicons-pencil:dots-y" />,
       icon2: <Icon icon="ep:arrow-down-bold" />,
       width: 'w-[12vw]',
     },{
+      id:3,
       title: 'Status',
       icon: <Icon icon="pepicons-pencil:dots-y" />,
       icon2: <Icon icon="ep:arrow-down-bold" />,
     },{
+      id:4,
       title: 'Deadline',
       icon: <Icon icon="pepicons-pencil:dots-y" />,
       icon2: <Icon icon="ep:arrow-down-bold" />,
     },{
+      id:5,
       title: 'Related Doc',
       icon: <Icon icon="ep:arrow-down-bold" />,
     },
@@ -83,6 +88,34 @@ export const tableTitle = [
     },
   ]
 
+  export const editColumnTitle = [
+    {
+      label: 'Project',
+      name: 'project',
+      type: 'text',
+    },
+    {
+      label: 'Owner',
+      name: 'owner',
+      type: 'text',
+    },
+    {
+      label: 'Status',
+      name:'status',
+      type: 'text',
+    },
+    {
+      label: 'Deadline',
+      name: 'deadline',
+      type: 'text',
+    },
+    {
+      label: 'Related Docs',
+      name: 'docs',
+      type: 'text',
+    }
+  ]
+
   export const addRecord = [
    {
       label: "Project Title",
@@ -93,8 +126,14 @@ export const tableTitle = [
     {
       label: "Status",
       name: 'label', 
-      type: 'text',
-      placeholder: 'enter status'
+      type: 'select',
+      placeholder: 'enter status',
+      options:[
+        {title: 'In Progress', value: 'Inprogress'},
+        {title: 'Upcoming', value: 'Upcoming'},
+        {title: 'Complete', value: 'Complete'},
+        {title: 'At Risk', value: 'At Risk'},
+      ]
     },
     {
       label: "Date",
