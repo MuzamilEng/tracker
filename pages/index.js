@@ -36,9 +36,7 @@ const { handleSubmit, setValue, control, reset } = useForm({
     setValue(name, value);
   };
 const handleEdit = (data, index) => {
-  console.log('kmksmdkm');
   if (data) {
-    // Store the selected data and its index
     selectData({ ...data, index });
     setCloumnTtitle({...data, index});
     console.log(data, 'edit');
@@ -48,7 +46,6 @@ const handleEdit = (data, index) => {
 const onSubmit = (data, e) => {
     console.log(data, 'data');
     e.preventDefault();
-  
     const newData = {
       title: data?.title || "",
       owner: data?.owner || "",
@@ -60,7 +57,6 @@ const onSubmit = (data, e) => {
     };
   
     if (record) {
-      // Update the existing data with new values
       const updatedData = {
         ...record,
         title: data?.title || "",
@@ -73,11 +69,8 @@ const onSubmit = (data, e) => {
       };
   
       updateData(record.index, updatedData);
-
-      console.log(record.index, 'r-index', updateData);
       setShowForm(false);
     } else {
-      // Add new data to the array
       addData(newData);
       setShowForm(false);
     }
@@ -132,15 +125,11 @@ const onSubmit = (data, e) => {
 
     const onDragEnd = (event) => {
       const { active, over } = event;
-      
       if (!over) return;
-    
       setRecord((records) => {
         const oldIndex = records.findIndex((item) => item.id === active.id);
         const newIndex = records.findIndex((item) => item.id === over.id);
-    
         const updatedRecords = arrayMove(records, oldIndex, newIndex);
-        console.log(updatedRecords, 'updatedRecords');
         setUpdatedRecords(updatedRecords);
         return updatedRecords;
       });
@@ -174,19 +163,6 @@ const onSubmit = (data, e) => {
         </div>
       )}
       <TableTitles showStatus={()=> setShowStatus(!showStatus)} editMode={editMode} />
-        {/* <div className="flex items-center">
-            {tableTitle?.map((title, index) => (
-                <div className={` w-full ${title?.width ? 'max-w-[14vw] ml-[3vw]': 'max-w-[17vw]'}`} key={index}>
-                    <div className="flex justify-between w-full">
-                    <p className="text-[1.5vw] ml-vw text-black font-medium">{title?.title}</p>
-                    <section className="flex items-center">
-                        <span className='text-[1.2vw]'>{title?.icon}</span>
-                        {title?.title === 'Status' ? <span className='text-[1.2vw] text-gray-500' onClick={()=> setShowStatus(!showStatus)}>{title?.icon2}</span> :  <span className='text-[1.2vw] text-gray-500'>{title?.icon2}</span>}
-                    </section>
-                    </div>
-                </div>
-            ))}
-        </div> */}
         <section className="grid grid-cols-1 w-full z-10">
           {editMode? <> 
             {state?.map((data, index)=> {
@@ -256,7 +232,7 @@ const onSubmit = (data, e) => {
                 })}
                 <div className="flex justify-center mt-vw items-center">
                 <button type='submit' className='text-vw p-0.5vw bg-blue-500 text-white hover:bg-blue-600 border-[1px] w-full max-w-[6vw] text-center ml-vw rounded-md'>Save</button>
-                <button className='text-vw p-0.5vw bg-red-500 text-white hover:bg-red-600 border-[1px] w-full max-w-[6vw] text-center ml-vw rounded-md' onClick={()=> setShowForm(!showForm)}>Cancle</button>
+                <button className='text-vw p-0.5vw bg-red-500 text-white hover:bg-red-600 border-[1px] w-full max-w-[6vw] text-center ml-vw rounded-md' onClick={()=> setShowForm(!showForm)}>Cancel</button>
                 </div>
                 </div>
         </form>

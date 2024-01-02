@@ -4,6 +4,7 @@ import { useGlobalContext } from '../Context/UserContext';
 
 const TableTitles = ({showStatus, editMode}) => {
   const { state1 } = useGlobalContext();
+  const [showEditBtn, setShowEditBtn] = useState(false)
   const [editedTitles, setEditedTitles] = useState(Array.from(state1));
   const [editingIndices, setEditingIndices] = useState(Array.from({ length: editedTitles.length }, () => false));
 
@@ -43,8 +44,12 @@ const TableTitles = ({showStatus, editMode}) => {
                   {title.title}
                 </span>
               )}
-              <section className="flex items-center">
-                <span className='text-[1.2vw]' onClick={() => handleToggleEdit(index)} >{title?.icon}</span>
+              <section className="flex relative items-center">
+                <span className='text-[1.2vw]' onClick={() => setShowEditBtn(!showEditBtn)} >{title?.icon}</span>
+             {showEditBtn && <div className='flex absolute top-[1.2vw] right-[0.7vw] items-center'>
+              <Icon icon="bx:edit" className='text-[vw] m-0.4vw text-blue-500' onClick={() => handleToggleEdit(index)} />
+                <Icon icon="teenyicons:tick-circle-solid" className='text-[vw] m-0.4vw text-green-500' onClick={() => setShowEditBtn(!showEditBtn)} />
+              </div>}
                 {title?.title === 'Status' ? (
                   <span className='text-[1.2vw] text-gray-500' onClick={showStatus}>
                     {title?.icon2}
